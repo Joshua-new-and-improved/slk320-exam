@@ -1,5 +1,5 @@
 // Offline support: the page itself is network-first (so updates arrive), images and fonts are cache-first.
-const V = "slk320-c343fa0977";
+const V = "slk320-c288a38ac6";
 const CORE = ["./", "index.html", "manifest.json", "icon.svg", "icon-192.png", "icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(V).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith("slk320-") && k !== V && k !== "slk320-img").map(k => caches.delete(k)))).then(() => self.clients.claim())); });

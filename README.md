@@ -1,6 +1,6 @@
 # SLK 320 Exam: study site
 
-A personal exam-study site for SLK 320 (University of Pretoria): Critical Psychology Ch 5 and 22, and Community Psychology Ch 1, 7, 18 and 23. It is built from the same source files as the Stage 1 PDF study guide.
+A personal exam-study site for SLK 320 (University of Pretoria): Critical Psychology Ch 5 and 22, and Community Psychology Ch 1, 7, 18 and 23. It holds the lessons, a 506-question bank in the exam's format, timed mock papers, flashcards and model answers.
 
 - `index.html` is the whole app. CSS, content and JavaScript are inline.
 - `img/` holds the 74 figures and photographs (WebP, lazy-loaded).
@@ -41,7 +41,7 @@ git push -u origin main
 
 ## Before you publish: privacy and copyright
 
-- The Critical Psychology content was prepared from **Jenna Minnaar's notes, which are marked "do not sell or distribute"**. A public GitHub Pages site can be found and read by anyone who has the link.
+- The site paraphrases and briefly quotes two copyrighted textbooks (Hook, 2004; Visser et al., 2022). It is meant for your own study. A public GitHub Pages site can be read by anyone who has the link.
 - The page carries a `noindex` tag, so search engines are asked not to list it. That is a request, not a lock.
 - To keep the site private, you can:
   - use a **private** repository with GitHub Pages, which needs a paid GitHub plan; or
