@@ -26,7 +26,7 @@ It's a static site of three files with no build step.
 | **Find along route**: fuel, food, coffee, EV, toilets within 500 m of your route, then add one as a stop in the right place | Requested | |
 | **Trip fuel cost and CO₂** from your car's L/100 km and fuel price | Requested | |
 | "Leave at" time with arrival estimate | Google | |
-| Turn-by-turn navigation with voice, lane-style "then…" preview, live ETA, auto-reroute | All | |
+| Turn-by-turn navigation with voice, a "then…" preview of the next turn, live ETA, auto-reroute | All | |
 | **Speed limit sign plus speeding warning** (configurable tolerance) | Waze | From OSM `maxspeed`, including SA implicit limits (urban 60, rural 100, motorway 120) |
 | **Road reports**: police, crash, traffic, hazard, **robot out (load-shedding)**, pothole, closure, speed camera. Each expires on its own, and you can mark it "Still there" or "Gone" | Waze | Spoken warnings when one is ahead on your route |
 | Preview drive (simulated) to rehearse a route | Requested | |
