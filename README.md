@@ -1,54 +1,51 @@
-# SLK 320 Exam: study site
+# Waypoint Maps
 
-A personal exam-study site for SLK 320 (University of Pretoria): Critical Psychology Ch 5 and 22, and Community Psychology Ch 1, 7, 18 and 23. It holds the lessons, a 506-question bank in the exam's format, timed mock papers, flashcards and model answers.
+A privacy-first map and navigation web app that takes the most-loved features of Google Maps, Waze and Apple Maps and fixes things people often complain about. It runs without an account, ads or tracking.
 
-- `index.html` is the whole app. CSS, content and JavaScript are inline.
-- `img/` holds the 74 figures and photographs (WebP, lazy-loaded).
-- `manifest.json`, `icon*.png` and `icon.svg` let you add the site to your home screen.
-- `sw.js` is the service worker that lets the site work offline.
-- `.nojekyll` tells GitHub Pages to serve the files as they are.
+## Run it
 
-## Publish it on GitHub Pages (first time)
+It's a static site of three files with no build step.
 
-1. On github.com, click **New repository**. Name it `slk320-exam`, choose **Public** (see the note below), and don't add a README. Click **Create repository**.
-2. On the new repository page, click **uploading an existing file**. Drag in **everything inside this folder**, including the `img` folder and the hidden `.nojekyll` file.
-   - On a Mac, press **Cmd + Shift + .** in Finder to show hidden files.
-   - The files must sit at the top level of the repository, not inside a sub-folder.
-3. Click **Commit changes**.
-4. Go to **Settings → Pages**. Under **Build and deployment**, choose **Deploy from a branch**, branch **main**, folder **/ (root)**, then **Save**.
-5. Wait one to two minutes. The site will be at: **https://joshua-new-and-improved.github.io/slk320-exam/**
-6. On your phone, open that address in the browser and choose **Add to Home Screen**. It opens like an app.
+- **Quickest:** open `index.html` in Chrome, Edge or Firefox.
+- **Better (GPS works everywhere):** serve it over HTTP and open `http://localhost:8000`:
+  ```
+  cd waypoint && python3 -m http.server 8000
+  ```
+- **On your phone:** host the folder on GitHub Pages, Netlify or Cloudflare Pages. GPS needs HTTPS. Then use "Add to Home Screen".
 
-If you use git instead of the web upload:
+## Features
 
-```
-cd slk320-exam-site
-git init && git add . && git commit -m "SLK 320 exam site"
-git branch -M main
-git remote add origin https://github.com/joshua-new-and-improved/slk320-exam.git
-git push -u origin main
-```
+| Feature | Inspired by | Notes |
+|---|---|---|
+| Search with autocomplete, biased to where you're looking | Google | Photon, with Nominatim as a fallback. You can also paste coordinates like `-25.7479, 28.2293` |
+| Place cards showing open/closed now, hours, phone, website and wheelchair access | Google/Apple | From OpenStreetMap tags |
+| Nearby categories: fuel, food, coffee, groceries, pharmacy, hospital, ATM, EV charging, parking, toilets, police, places to stay | Google | |
+| Up to 4 route alternatives, each showing time, distance, arrival time, main roads and toll/highway/ferry badges | Google | |
+| **Avoid tolls / highways / ferries** that tells you plainly when no alternative avoids them | Requested | Picks the best alternative that complies |
+| **Multi-stop routes with "Optimise order"** | Requested (Google lacks it) | OSRM trip service, with a local fallback |
+| **Find along route**: fuel, food, coffee, EV, toilets within 500 m of your route, then add one as a stop in the right place | Requested | |
+| **Trip fuel cost and CO₂** from your car's L/100 km and fuel price | Requested | |
+| "Leave at" time with arrival estimate | Google | |
+| Turn-by-turn navigation with voice, a "then…" preview of the next turn, live ETA, auto-reroute | All | |
+| **Speed limit sign plus speeding warning** (configurable tolerance) | Waze | From OSM `maxspeed`, including SA implicit limits (urban 60, rural 100, motorway 120) |
+| **Road reports**: police, crash, traffic, hazard, **robot out (load-shedding)**, pothole, closure, speed camera. Each expires on its own, and you can mark it "Still there" or "Gone" | Waze | Spoken warnings when one is ahead on your route |
+| Preview drive (simulated) to rehearse a route | Requested | |
+| Saved Home, Work and favourites, plus **Find my parked car** | Apple | |
+| Share a place or your ETA | Google/Waze | |
+| Long-press / right-click menu: what's here, directions to/from, add stop, save, copy coordinates | Google | |
+| Measure distance tool | Google | |
+| Street, Night, Satellite, Hybrid and OSM map styles, with automatic dark mode | Apple | |
+| **Export / import your data** (JSON) and "Erase all data" | Requested | |
+| Keyboard shortcuts: `/` search, `L` locate, `R` report, `D` directions, `,` settings | | |
 
-## Update it later
+## Honest limitations
 
-1. Replace the changed files in the repository. Use **Add file → Upload files** and drag in the new `index.html`, plus any new images. Then commit.
-2. Wait a minute, then open the site with a new version number on the end of the address to skip old cached copies:
-   - `https://joshua-new-and-improved.github.io/slk320-exam/?v=2`
-   - Next time use `?v=3`, and so on.
-3. The service worker always checks the network for `index.html` first, so a normal reload also picks up updates once you're online.
+- **No live traffic.** Free open routing doesn't include live traffic. ETAs assume typical road speeds. Use reports for incidents.
+- **Reports stay on your device.** There is no server, so your reports aren't shared with other drivers. Sharing them would need a small backend, which is the natural next step.
+- **Open data coverage varies.** Opening hours, speed limits and POIs come from OpenStreetMap volunteers, and coverage in South African metros is good but not complete.
+- **Public demo servers** (OSRM FOSSGIS, Overpass, Photon, Nominatim) have fair-use limits. For heavy or commercial use, self-host them or use a paid provider.
+- Fuel price is whatever you enter. The default R22.00/L is a placeholder, so check the current official DMRE price.
 
-**Your progress is not affected by updates.** Progress, quiz scores, flashcard schedule, notes, highlights, bookmarks, plans and mock papers are stored in your browser under one key (`slk320.v1`). Use **Settings → Export progress** before changing phone or clearing your browser, and **Import progress** afterwards.
+## Data & credits
 
-## Before you publish: privacy and copyright
-
-- The site paraphrases and briefly quotes two copyrighted textbooks (Hook, 2004; Visser et al., 2022). It is meant for your own study. A public GitHub Pages site can be read by anyone who has the link.
-- The page carries a `noindex` tag, so search engines are asked not to list it. That is a request, not a lock.
-- To keep the site private, you can:
-  - use a **private** repository with GitHub Pages, which needs a paid GitHub plan; or
-  - skip publishing and open `index.html` directly from your phone or laptop. Everything works locally except offline caching.
-- Photographs are CC BY / CC BY-SA from Wikimedia Commons. Their credits are in **Gallery** and **Image credits**. Keep those pages if you share the site.
-
-## Assumptions to check
-
-- The exam date isn't confirmed. Set it in **Settings** and the countdown on the home page starts.
-- The exam duration isn't confirmed either. The Exam room defaults (60 minutes per half, 120 for the full paper) are adjustable.
+Map data © OpenStreetMap contributors (ODbL). Tiles © CARTO, OSM, Esri. Routing: OSRM on FOSSGIS servers. Geocoding: Photon (Komoot) and Nominatim.
