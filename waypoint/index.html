@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Waypoint Maps</title>
+<meta name="description" content="A privacy-first map and navigation app combining the best of Google Maps, Waze and Apple Maps.">
+<meta name="theme-color" content="#0f6f6a">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="map" aria-label="Map"></div>
+
+<!-- ===== Side panel / bottom sheet ===== -->
+<aside id="panel" class="panel">
+  <div class="sheet-handle" id="sheetHandle" aria-hidden="true"></div>
+
+  <header class="brand">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 2c-3.9 0-7 3.1-7 7 0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z" fill="currentColor"/><circle cx="12" cy="9" r="2.6" fill="var(--panel)"/></svg>
+    </div>
+    <h1>Waypoint</h1>
+    <button class="icon-btn" id="settingsBtn" title="Settings (,)" aria-label="Settings">
+      <svg viewBox="0 0 24 24" width="20" height="20"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-1.7-1L15 3.5h-4l-.4 2.5a7 7 0 0 0-1.7 1l-2.4-1-2 3.4L6.6 11a7.5 7.5 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7 7 0 0 0 1.7-1l2.4 1 2-3.4zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" fill="currentColor"/></svg>
+    </button>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="tabs" role="tablist">
+    <button role="tab" class="tab active" data-tab="explore" id="tab-explore">Explore</button>
+    <button role="tab" class="tab" data-tab="directions" id="tab-directions">Directions</button>
+    <button role="tab" class="tab" data-tab="saved" id="tab-saved">Saved</button>
+    <button role="tab" class="tab" data-tab="reports" id="tab-reports">Reports</button>
+  </nav>
+
+  <!-- ===== Explore ===== -->
+  <section class="view active" id="view-explore">
+    <div class="search-wrap">
+      <input id="searchInput" type="search" placeholder="Search places or addresses  ( / )" autocomplete="off" aria-label="Search">
+      <ul class="suggestions" id="searchSuggest" hidden></ul>
+    </div>
+
+    <div class="chips" id="categoryChips" aria-label="Nearby categories"></div>
+
+    <div id="placeCard" class="place-card" hidden></div>
+
+    <div id="nearbyResults" class="list"></div>
+
+    <div class="quick" id="quickActions">
+      <h2 class="label">Quick</h2>
+      <div class="quick-grid">
+        <button class="quick-btn" data-quick="home"><span class="qi">⌂</span><span>Home</span></button>
+        <button class="quick-btn" data-quick="work"><span class="qi">▣</span><span>Work</span></button>
+        <button class="quick-btn" data-quick="park"><span class="qi">P</span><span id="parkLabel">Save parking</span></button>
+        <button class="quick-btn" data-quick="measure"><span class="qi">↔</span><span>Measure</span></button>
+      </div>
+    </div>
+
+    <div id="recentWrap">
+      <h2 class="label">Recent</h2>
+      <div id="recentList" class="list"></div>
+    </div>
+  </section>
+
+  <!-- ===== Directions ===== -->
+  <section class="view" id="view-directions">
+    <div class="modes" role="radiogroup" aria-label="Travel mode">
+      <button class="mode active" data-mode="car" aria-checked="true">Drive</button>
+      <button class="mode" data-mode="bike">Cycle</button>
+      <button class="mode" data-mode="foot">Walk</button>
+    </div>
+
+    <div id="stops" class="stops"></div>
+    <div class="row gap">
+      <button class="btn ghost" id="addStopBtn">+ Add stop</button>
+      <button class="btn ghost" id="optimiseBtn" title="Reorder middle stops for the shortest trip">Optimise order</button>
+      <button class="btn ghost" id="swapBtn" title="Swap start and end">⇅ Swap</button>
+    </div>
+
+    <div class="row gap avoid">
+      <label class="toggle"><input type="checkbox" id="avoidTolls"> Avoid tolls</label>
+      <label class="toggle"><input type="checkbox" id="avoidMotorway"> Avoid highways</label>
+      <label class="toggle"><input type="checkbox" id="avoidFerry"> Avoid ferries</label>
+    </div>
+
+    <div class="row gap">
+      <label class="field small">Leave at
+        <input type="time" id="departTime">
+      </label>
+      <button class="btn primary grow" id="routeBtn">Get route</button>
+    </div>
+
+    <div id="routeStatus" class="status" hidden></div>
+    <div id="routeAlts" class="alts"></div>
+    <div id="routeSummary"></div>
+    <ol id="steps" class="steps"></ol>
+  </section>
+
+  <!-- ===== Saved ===== -->
+  <section class="view" id="view-saved">
+    <p class="hint">Everything is stored only on this device. No account, no tracking.</p>
+    <div id="savedList" class="list"></div>
+    <div class="row gap">
+      <button class="btn ghost" id="exportBtn">Export</button>
+      <label class="btn ghost file-btn">Import<input type="file" id="importFile" accept="application/json" hidden></label>
+    </div>
+  </section>
+
+  <!-- ===== Reports ===== -->
+  <section class="view" id="view-reports">
+    <p class="hint">Report what you see on the road. Reports expire automatically and are kept on this device. Tap a type, then tap the map (or use your location).</p>
+    <div class="report-grid" id="reportGrid"></div>
+    <h2 class="label">Active reports</h2>
+    <div id="reportList" class="list"></div>
+  </section>
+
+  <footer class="attrib-note">Map data © OpenStreetMap contributors · Routing OSRM · Search Photon/Nominatim</footer>
+</aside>
+
+<!-- ===== Map controls ===== -->
+<div class="map-controls">
+  <button class="fab" id="locateBtn" title="My location (L)" aria-label="My location">
+    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm9 3h-2.1A7 7 0 0 0 13 5.1V3h-2v2.1A7 7 0 0 0 5.1 11H3v2h2.1A7 7 0 0 0 11 18.9V21h2v-2.1a7 7 0 0 0 5.9-5.9H21z" fill="currentColor"/></svg>
+  </button>
+  <button class="fab" id="layersBtn" title="Map style" aria-label="Map style">
+    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 3 2 8l10 5 10-5zm-7.6 8.2L2 12.4l10 5 10-5-2.4-1.2L12 15zm0 4.4L2 16.8l10 5 10-5-2.4-1.2L12 19.4z" fill="currentColor"/></svg>
+  </button>
+  <button class="fab" id="reportFab" title="Quick report (R)" aria-label="Report">
+    <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 2 1 21h22zm1 15h-2v-2h2zm0-4h-2V9h2z" fill="currentColor"/></svg>
+  </button>
+</div>
+
+<div class="layer-menu" id="layerMenu" hidden>
+  <button data-layer="streets" class="active">Streets</button>
+  <button data-layer="dark">Night</button>
+  <button data-layer="satellite">Satellite</button>
+  <button data-layer="hybrid">Hybrid</button>
+  <button data-layer="osm">OSM classic</button>
+  <label class="toggle"><input type="checkbox" id="showReports" checked> Show reports</label>
+</div>
+
+<div class="measure-bar" id="measureBar" hidden>
+  <span id="measureText">Tap the map to measure</span>
+  <button class="btn ghost" id="measureClear">Clear</button>
+  <button class="btn primary" id="measureDone">Done</button>
+</div>
+
+<div class="report-mode-bar" id="reportModeBar" hidden>
+  <span id="reportModeText">Tap the map where it is</span>
+  <button class="btn ghost" id="reportHere">Use my location</button>
+  <button class="btn ghost" id="reportCancel">Cancel</button>
+</div>
+
+<!-- ===== Navigation overlay ===== -->
+<div class="nav" id="nav" hidden>
+  <div class="nav-banner">
+    <div class="nav-arrow" id="navArrow">↑</div>
+    <div class="nav-text">
+      <div class="nav-dist" id="navDist">—</div>
+      <div class="nav-instr" id="navInstr">Starting…</div>
+      <div class="nav-then" id="navThen"></div>
+    </div>
+  </div>
+  <div class="nav-alert" id="navAlert" hidden></div>
+  <div class="nav-bottom">
+    <div class="speedo" id="speedo"><span id="speedVal">0</span><small id="speedUnit">km/h</small></div>
+    <div class="limit" id="limitSign" hidden><span id="limitVal">60</span></div>
+    <div class="nav-eta">
+      <div class="eta-time" id="etaTime">--:--</div>
+      <div class="eta-meta" id="etaMeta">— · —</div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn ghost" id="navMute" title="Voice on/off">Voice on</button>
+      <button class="btn ghost" id="navReport">Report</button>
+      <button class="btn ghost" id="navShare">Share ETA</button>
+      <button class="btn danger" id="navEnd">End</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Settings dialog ===== -->
+<dialog id="settings" class="dialog">
+  <form method="dialog" class="dialog-body">
+    <h2>Settings</h2>
+    <label class="field">Units
+      <select id="setUnits"><option value="metric">Kilometres</option><option value="imperial">Miles</option></select>
+    </label>
+    <label class="field">Theme
+      <select id="setTheme"><option value="auto">Match system</option><option value="light">Light</option><option value="dark">Dark</option></select>
+    </label>
+    <label class="field">Fuel use (L/100 km)
+      <input type="number" id="setFuelUse" step="0.1" min="1" max="40">
+    </label>
+    <label class="field">Fuel price (per litre)
+      <input type="number" id="setFuelPrice" step="0.01" min="0">
+    </label>
+    <label class="field">Currency symbol
+      <input type="text" id="setCurrency" maxlength="4">
+    </label>
+    <label class="field">Speed alert tolerance (km/h over limit)
+      <input type="number" id="setSpeedTol" min="0" max="30">
+    </label>
+    <label class="toggle"><input type="checkbox" id="setVoice"> Voice guidance</label>
+    <label class="toggle"><input type="checkbox" id="setReportAlerts"> Warn me about reports on my route</label>
+    <p class="hint">Fuel price is whatever you enter. Check the latest official price before relying on cost estimates.</p>
+    <div class="row gap end">
+      <button class="btn danger" value="wipe" id="wipeBtn" type="button">Erase all data</button>
+      <button class="btn primary" value="ok">Done</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<div id="ctxMenu" class="ctx" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
